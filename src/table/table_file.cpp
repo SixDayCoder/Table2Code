@@ -22,8 +22,17 @@ static void SplitString(const string& src, vector<string>& outStringVector, cons
         endIndex = src.find(delim, begIndex);
     }
     if(begIndex != src.length()) {
-        outStringVector.push_back(src.substr(begIndex));
+        outStringVector.push_back(src.substr(begIndex, src.length() - begIndex));
     }
+}
+
+static void TrimString(string& src, char c)
+{
+    if(src.empty()) {
+        return;
+    }
+    src.erase(0, src.find_first_not_of(c));
+    src.erase(src.find_last_not_of(c) + 1);
 }
 
 TableFile::TableFile(const char *szFilePath)
@@ -40,8 +49,7 @@ void TableFile::Load()
     int32_t nLineIndex = 0;
     while(!input.eof() && !input.bad()) {
         input.getline(buffer, 1024);
-        ParseRecord(buffer, nLineIndex);
-        nLineIndex++;
+        ParseRecord(buffer, nLineIndex++);
     }
 }
 
@@ -63,31 +71,35 @@ void TableFile::Read(float &fValReal, int32_t nRecordIndex, int32_t nIndexInReco
 void TableFile::ParseRecord(const char *line, int32_t nLineIndex)
 {
     string buffer(line);
+    TrimString(buffer, '\r');
+    TrimString(buffer, '\n');
+    TrimString(buffer, ' ');
 
+    vector<string> elements;
     if(nLineIndex == TABLE_LINE_INDEX_NAME) {
-        vector<string> nameList;
-        SplitString(buffer, nameList, "\t");
-        for(int32_t i = 0 ; i < nameList.size(); ++i) {
-            cout << nameList[i] << endl;
+        SplitString(buffer, elements, "\t");
+        for(auto it = elements.begin(); it != elements.end(); ++it) {
+            cout << *it << " ";
         }
+        cout << endl;
         return;
     }
 
     if(nLineIndex == TABLE_LINE_INDEX_TYPE) {
-        vector<string> typeList;
-        SplitString(buffer, typeList, "\t");
-        for(int32_t i = 0 ; i < typeList.size(); ++i) {
-            cout << typeList[i] << endl;
+        SplitString(buffer, elements, "\t");
+        for(auto it = elements.begin(); it != elements.end(); ++it) {
+            cout << *it << " ";
         }
+        cout << endl;
         return;
     }
 
     if(nLineIndex == TABLE_LINE_INDEX_DESC) {
-        vector<string> descList;
-        SplitString(buffer, descList, "\t");
-        for(int32_t i = 0 ; i < descList.size(); ++i) {
-            cout << descList[i] << endl;
+        SplitString(buffer, elements, "\t");
+        for(auto it = elements.begin(); it != elements.end(); ++it) {
+            cout << *it << " ";
         }
+        cout << endl;
         return;
     }
 

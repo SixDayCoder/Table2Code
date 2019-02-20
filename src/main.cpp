@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include "table/table_record.h"
 #include "table/table_cell.h"
+#include "table/table_file.h"
 using namespace std;
 
-int main()
+void TestTableRecord()
 {
     TableCellInt32 cellInt32(500);
     printf("Int32 : %d Type : %d\n", cellInt32.GetElem(), cellInt32.GetType());
@@ -18,6 +19,17 @@ int main()
 
     TableCellReal cellReal(31.23231f);
     printf("Float : %f Type : %d\n", cellReal.GetElem(), cellReal.GetType());
+}
 
+void TestTableFile(const char* szTableName)
+{
+    TableFile file(szTableName);
+    file.Load();
+}
+
+int main()
+{
+    const char* dir = "D:\\Table2Code\\tables\\TestTable.txt";
+    TestTableFile(dir);
     return 0;
 }

@@ -5,8 +5,13 @@
 #ifndef TABLE2CODE_TABLE_RECORD_H
 #define TABLE2CODE_TABLE_RECORD_H
 
+#include "table/table_cell.h"
+
 class TableRecord
 {
+public:
+
+
 
 };
 

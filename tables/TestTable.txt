@@ -1,0 +1,7 @@
+Id	Desc	Int32Val	Int64Val	FloatVal	StringVal
+INT32	STRING	INT32	INT64	FLOAT	STRING
+#ID Can Not Change!	Desc For Human Reading	32-Bits Integer	64-Bits Integer	Real Number	String
+1	Tips 1	32	4794650000000	0.6	HelloWorld
+2	Tips 2	123	1323120000000000	4454545.22	HelloTable
+3	Tips 3	-1	4645650000000000	-12477.004	HelloCode
+4	Tips 4	1	-1	-0.5	HelloEverything

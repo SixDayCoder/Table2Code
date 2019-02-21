@@ -53,34 +53,64 @@ void TableFile::Load()
     }
 }
 
-void TableFile::Read(int64_t &nValInt64, int32_t nRecordIndex, int32_t nIndexInRecord)
+void TableFile::Read(int32_t &nValInt32, int32_t nRecordIndex, int32_t nIndexInRecord) const
 {
-
+    assert(m_RecordType[nIndexInRecord] == TableCellType::TABLE_CELL_TYPE_INT32);
+    assert(nRecordIndex >= 0 && nRecordIndex < m_Records.size());
+    const TableRecordString& records = m_Records[nRecordIndex];
+    assert(nIndexInRecord >= 0 && nIndexInRecord < records.size());
+    const std::string& cell = records[nIndexInRecord];
+    nValInt32 = std::stoi(cell);
 }
 
-void TableFile::Read(std::string &szValStr, int32_t nRecordIndex, int32_t nIndexInRecord)
-{
 
+void TableFile::Read(int64_t &nValInt64, int32_t nRecordIndex, int32_t nIndexInRecord) const
+{
+    assert(m_RecordType[nIndexInRecord] == TableCellType::TABLE_CELL_TYPE_INT64);
+    assert(nRecordIndex >= 0 && nRecordIndex < m_Records.size());
+    const TableRecordString& records = m_Records[nRecordIndex];
+    assert(nIndexInRecord >= 0 && nIndexInRecord < records.size());
+    const std::string& cell = records[nIndexInRecord];
+    nValInt64 = static_cast<int64_t>(std::stoll(cell));
 }
 
-void TableFile::Read(float &fValReal, int32_t nRecordIndex, int32_t nIndexInRecord)
+void TableFile::Read(std::string &szValStr, int32_t nRecordIndex, int32_t nIndexInRecord) const
 {
+    assert(m_RecordType[nIndexInRecord] == TableCellType::TABLE_CELL_TYPE_STRING);
+    assert(nRecordIndex >= 0 && nRecordIndex < m_Records.size());
+    const TableRecordString& records = m_Records[nRecordIndex];
+    assert(nIndexInRecord >= 0 && nIndexInRecord < records.size());
+    const std::string& cell = records[nIndexInRecord];
+    szValStr = cell;
+}
 
+void TableFile::Read(float &fValReal, int32_t nRecordIndex, int32_t nIndexInRecord) const
+{
+    assert(m_RecordType[nIndexInRecord] == TableCellType::TABLE_CELL_TYPE_FLOAT);
+    assert(nRecordIndex >= 0 && nRecordIndex < m_Records.size());
+    const TableRecordString& records = m_Records[nRecordIndex];
+    assert(nIndexInRecord >= 0 && nIndexInRecord < records.size());
+    const std::string& cell = records[nIndexInRecord];
+    fValReal = std::stof(cell);
 }
 
 void TableFile::ParseRecord(const char *line, int32_t nLineIndex)
 {
+    if(nLineIndex == TABLE_LINE_INDEX_NAME || nLineIndex == TABLE_LINE_INDEX_DESC) {
+        return;
+    }
+
     string buffer(line);
     TrimString(buffer, '\r');
     TrimString(buffer, '\n');
     TrimString(buffer, ' ');
 
-    TableRecordString record;
-    SplitString(buffer, record, "\t");
-
-    if(nLineIndex == TABLE_LINE_INDEX_NAME) {
+    if(buffer.empty()) {
         return;
     }
+
+    TableRecordString record;
+    SplitString(buffer, record, "\t");
 
     if(nLineIndex == TABLE_LINE_INDEX_TYPE) {
         for(auto it = record.begin(); it != record.end(); it++) {
@@ -90,4 +120,5 @@ void TableFile::ParseRecord(const char *line, int32_t nLineIndex)
         }
         return;
     }
+    m_Records.push_back(record);
 }

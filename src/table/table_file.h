@@ -34,15 +34,17 @@ public:
 
     void Load();
 
+    int32_t RecordCount() const { return static_cast<int32_t>(m_Records.size()); }
+
 public:
 
-    void Read(int32_t& nValInt32, int32_t nRecordIndex, int32_t nIndexInRecord);
+    void Read(int32_t& nValInt32, int32_t nRecordIndex, int32_t nIndexInRecord) const;
 
-    void Read(int64_t& nValInt64, int32_t nRecordIndex, int32_t nIndexInRecord);
+    void Read(int64_t& nValInt64, int32_t nRecordIndex, int32_t nIndexInRecord) const;
 
-    void Read(std::string& szValStr, int32_t nRecordIndex, int32_t nIndexInRecord);
+    void Read(std::string& szValStr, int32_t nRecordIndex, int32_t nIndexInRecord) const;
 
-    void Read(float& fValReal, int32_t nRecordIndex, int32_t nIndexInRecord);
+    void Read(float& fValReal, int32_t nRecordIndex, int32_t nIndexInRecord) const;
 
 private:
 

@@ -7,6 +7,10 @@ INCLUDE_DIRECTORIES(
         src/table
 )
 
-SET(SRC_FILES src/main.cpp src/table/table_cell.cpp src/table/table_file.cpp src/table/table_impl.cpp)
+SET(SRC_FILES
+        src/main.cpp
+        src/table/table_file.cpp
+        src/table/table_impl.cpp
+        )
 
 ADD_EXECUTABLE(Table2Code ${SRC_FILES})

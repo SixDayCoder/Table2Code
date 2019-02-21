@@ -75,32 +75,19 @@ void TableFile::ParseRecord(const char *line, int32_t nLineIndex)
     TrimString(buffer, '\n');
     TrimString(buffer, ' ');
 
-    vector<string> elements;
+    TableRecordString record;
+    SplitString(buffer, record, "\t");
+
     if(nLineIndex == TABLE_LINE_INDEX_NAME) {
-        SplitString(buffer, elements, "\t");
-        for(auto it = elements.begin(); it != elements.end(); ++it) {
-            cout << *it << " ";
-        }
-        cout << endl;
         return;
     }
 
     if(nLineIndex == TABLE_LINE_INDEX_TYPE) {
-        SplitString(buffer, elements, "\t");
-        for(auto it = elements.begin(); it != elements.end(); ++it) {
-            cout << *it << " ";
+        for(auto it = record.begin(); it != record.end(); it++) {
+            int32_t nTypeNumber = TableCellType::GetTypeNumber(it->c_str());
+            assert(nTypeNumber != -1);
+            m_RecordType.push_back(nTypeNumber);
         }
-        cout << endl;
         return;
     }
-
-    if(nLineIndex == TABLE_LINE_INDEX_DESC) {
-        SplitString(buffer, elements, "\t");
-        for(auto it = elements.begin(); it != elements.end(); ++it) {
-            cout << *it << " ";
-        }
-        cout << endl;
-        return;
-    }
-
 }

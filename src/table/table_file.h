@@ -7,7 +7,12 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
+
+#include "table/table_cell.h"
+
+using TableRecordString = std::vector<std::string>;
 class TableFile
 {
 public:
@@ -48,7 +53,8 @@ private:
     std::string m_szFilePath;
     std::string m_szFileName;
 
-
+    std::vector<int32_t> m_RecordType;
+    std::vector<TableRecordString> m_Records;
 };
 
 

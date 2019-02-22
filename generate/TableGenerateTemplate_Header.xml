@@ -1,0 +1,38 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+
+<root>
+
+    <comment>
+        /*Auto Generated.Do Not Modify.*/
+    </comment>
+
+
+    <include>
+        #include "table/table_file.h"
+    </include>
+
+    <classhead>
+        class Table_${FileName}
+        {
+            public:
+                enum
+                {
+                    ${IdBody}
+                };
+            public:
+                bool Load(const TableFile${Reference} tableFile, int32_t nLineIndex);
+    </classhead>
+
+    <classend>
+        };
+    </classend>
+
+    <property>
+        private:
+            ${Type} m_${VariableName};
+        public:
+            ${Type} Get${VariableName}() const { return m_${VariableName}; }
+    </property>
+
+</root>
+

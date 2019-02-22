@@ -38,7 +38,7 @@ int32_t TableCellType::GetTypeNumber(const char *szTypeString)
     return -1;
 }
 
-
+//--------------------------------------------TableRecordString Utlis--------------------------------------------//
 
 static void SplitString(const string& src, vector<string>& outStringVector, const string& delim)
 {
@@ -80,6 +80,7 @@ void TableFile::Load()
         input.getline(buffer, 1024);
         ParseRecord(buffer, nLineIndex++);
     }
+    input.close();
 }
 
 void TableFile::Read(int32_t &nValInt32, int32_t nRecordIndex, int32_t nIndexInRecord) const

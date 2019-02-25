@@ -1,4 +1,3 @@
-
 <?xml version = "1.0" encoding = "utf-8"?>
 
 <root>
@@ -7,15 +6,14 @@
         Auto Generated.Do Not Modify.
     </comment>
 
-    <body>
-    #include "table/table_${table_name_little_case}.h"
-
-    bool Table_${table_name}::Load(const TableFile${Reference} tableFile, int32_t nLineIndex)
+    <bodyimpl>
+    #include "table/table_${FileName}.h"
+    bool Table_${FileName}::Load(const TableFile${Reference} tableFile, int32_t nLineIndex)
     {
-        ${body_impl}
+        ${BodyImpl}
         return true;
     }
-    </body>
+    </bodyimpl>
 
 </root>
 

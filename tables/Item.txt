@@ -1,0 +1,7 @@
+Id	Desc	DataId	Price	StackCount
+INT32	STRING	INT32	INT32	INT32
+#ID Can Not Change!	物品描述	物品的DataId	物品的单价	物品的堆叠数量
+1	辉耀	1	5000	1
+2	强袭	2	6000	2
+3	希瓦	3	7500	2
+4	羊刀	4	8000	1

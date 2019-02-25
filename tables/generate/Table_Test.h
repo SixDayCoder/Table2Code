@@ -45,4 +45,5 @@
             std::string GetStringVal() const { return m_StringVal; }
     
         };
+        TABLE_INSTANCE_DECLARE(Table_Test);
     

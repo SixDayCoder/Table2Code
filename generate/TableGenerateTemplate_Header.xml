@@ -24,6 +24,7 @@
 
     <classend>
         };
+        TABLE_INSTANCE_DECLARE(Table_${FileName});
     </classend>
 
     <property>

@@ -2,6 +2,8 @@
 
 #include "table/table_test.h"
 
+TABLE_INSTANCE_IMPL(Table_Test);
+
 bool Table_Test::Load(const TableFile &tableFile, int32_t nLineIndex)
 {
     tableFile.Read(m_Id, nLineIndex, (int32_t)(ID_ID));

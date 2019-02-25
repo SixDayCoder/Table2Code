@@ -57,7 +57,7 @@ public:
 
 public:
 
-    TableFile(const char* szFilePath);
+    explicit TableFile(const char* szFilePath);
 
     ~TableFile() {}
 

@@ -39,4 +39,5 @@
             int32_t GetStackCount() const { return m_StackCount; }
     
         };
+        TABLE_INSTANCE_DECLARE(Table_Item);
     

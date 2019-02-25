@@ -171,9 +171,9 @@ def generate_class_body(root, name_list, type_list):
     return ret
 
 
-def generate_class_end(root):
+def generate_class_end(root, file_name):
     node = root.find(class_end_tag)
-    return node.text.replace(newline_str, "\n")
+    return node.text.replace(filename_str, file_name)
 
 
 def generate_parse_header(path, name_list, type_list):
@@ -185,7 +185,7 @@ def generate_parse_header(path, name_list, type_list):
     output = ""
     output = output + generate_class_header(root, file_name, name_list)
     output = output + generate_class_body(root, name_list, type_list)
-    output = output + generate_class_end(root)
+    output = output + generate_class_end(root, file_name)
     add_new_file_to(class_name + ".h", output)
 
 

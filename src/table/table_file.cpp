@@ -3,6 +3,7 @@
 //
 
 #include "table/table_file.h"
+#include "utils/utils.h"
 
 #include <assert.h>
 #include <fstream>
@@ -38,31 +39,6 @@ int32_t TableCellType::GetTypeNumber(const char *szTypeString)
     return -1;
 }
 
-//--------------------------------------------TableRecordString Utlis--------------------------------------------//
-
-static void SplitString(const string& src, vector<string>& outStringVector, const string& delim)
-{
-    string::size_type begIndex = 0;
-    string::size_type endIndex = src.find(delim);
-
-    while(string::npos != endIndex) {
-        outStringVector.push_back(src.substr(begIndex, endIndex - begIndex));
-        begIndex = endIndex + delim.size();
-        endIndex = src.find(delim, begIndex);
-    }
-    if(begIndex != src.length()) {
-        outStringVector.push_back(src.substr(begIndex, src.length() - begIndex));
-    }
-}
-
-static void TrimString(string& src, char c)
-{
-    if(src.empty()) {
-        return;
-    }
-    src.erase(0, src.find_first_not_of(c));
-    src.erase(src.find_last_not_of(c) + 1);
-}
 
 TableFile::TableFile(const char *szFilePath)
 {
@@ -131,17 +107,15 @@ void TableFile::ParseRecord(const char *line, int32_t nLineIndex)
     }
 
     string buffer(line);
-    TrimString(buffer, '\r');
-    TrimString(buffer, '\n');
-    TrimString(buffer, ' ');
+    StringUtils::TrimString(buffer, '\r');
+    StringUtils::TrimString(buffer, '\n');
+    StringUtils::TrimString(buffer, ' ');
 
     if(buffer.empty()) {
         return;
     }
-
     TableRecordString record;
-    SplitString(buffer, record, "\t");
-
+    StringUtils::SplitString(buffer, record, "\t");
     if(nLineIndex == TABLE_LINE_INDEX_TYPE) {
         for(auto it = record.begin(); it != record.end(); it++) {
             int32_t nTypeNumber = TableCellType::GetTypeNumber(it->c_str());

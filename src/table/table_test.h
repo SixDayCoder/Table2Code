@@ -1,5 +1,4 @@
-#include "table/table_file.h"
-
+#include "table/table_manager.h"
 
 //TODO:auto generated needed
 
@@ -61,3 +60,5 @@ public:
 
     const char* GetStringVal() const { return m_StringVal.c_str(); }
 };
+
+TABLE_INSTANCE_DECLARE(Table_Test);

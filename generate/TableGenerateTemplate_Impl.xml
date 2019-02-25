@@ -3,16 +3,17 @@
 <root>
 
     <comment>
-        Auto Generated.Do Not Modify.
+        /*Auto Generated.Do Not Modify.*/
     </comment>
 
     <bodyimpl>
-    #include "table/table_${FileName}.h"
-    bool Table_${FileName}::Load(const TableFile${Reference} tableFile, int32_t nLineIndex)
-    {
-        ${BodyImpl}
-        return true;
-    }
+        #include "table/table_${FileName}.h"
+        TABLE_INSTANCE_IMPL(Table_${FileName});
+        bool Table_${FileName}::Load(const TableFile${Reference} tableFile, int32_t nLineIndex)
+        {
+            ${BodyImpl}
+            return true;
+        }
     </bodyimpl>
 
 </root>

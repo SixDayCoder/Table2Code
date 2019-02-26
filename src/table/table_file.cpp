@@ -44,7 +44,7 @@ TableFile::TableFile(const char *szFilePath)
 {
     assert(szFilePath != nullptr);
     m_szFilePath = szFilePath;
-    m_szFileName = m_szFilePath.substr(m_szFilePath.find_last_of('\\') + 1);
+    m_szFileName = FileUtils::FileNameWithoutExtension(szFilePath);
 }
 
 void TableFile::Load()

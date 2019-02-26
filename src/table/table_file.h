@@ -69,6 +69,12 @@ public:
 
 public:
 
+    const std::string GetFilePath() const { return m_szFilePath; }
+
+    const std::string GetFileName() const { return m_szFileName; }
+
+public:
+
     void Read(int32_t& nValInt32, int32_t nRecordIndex, int32_t nIndexInRecord) const;
 
     void Read(int64_t& nValInt64, int32_t nRecordIndex, int32_t nIndexInRecord) const;

@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include <dirent.h>
 
 class StringUtils
 {
@@ -21,7 +20,10 @@ public:
 
 class FileUtils
 {
+public:
+    static std::string FileNameWithoutExtension(const char* szFilePath);
 
+    static bool ListDir(const char* szDir, std::vector<std::string>& outFileVec);
 };
 
 #endif //TABLE2CODE_UTILS_H

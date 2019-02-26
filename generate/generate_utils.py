@@ -29,7 +29,7 @@ desc_str = "Desc"
 header_template_path = r"./TableGenerateTemplate_Header.xml"
 impl_template_path = r"./TableGenerateTemplate_Impl.xml"
 
-impl_output_file_name = "Table_Impl.cpp"
+impl_output_file_name = "table_impl.cpp"
 impl_line_template = r"tableFile.Read({0}, nLineIndex, (int32_t){1});"
 
 # constant for xml replace
@@ -48,6 +48,8 @@ reference_str = "${Reference}"
 type_str = "${Type}"
 valname_str = "${VariableName}"
 bodyimpl_str = "${BodyImpl}"
+abs_file_path_str = "${AbsFilePath}"
+include_name_str = "${IncludeName}"
 
 
 # global variable in this script
@@ -107,7 +109,6 @@ def real_file_name(filepath):
     except Exception as e:
         print (e)
         sys.exit(2)
-
 
 def header_idbody(name_list):
     ret = ""
@@ -178,7 +179,7 @@ def generate_class_end(root, file_name):
 
 def generate_parse_header(path, name_list, type_list):
     file_name = real_file_name(path)
-    class_name = "Table_" + file_name
+    class_name = "table_" + file_name.lower()
 
     tree = ET.parse(header_template_path)
     root = tree.getroot()
@@ -198,14 +199,20 @@ def generate_parse_impl(path, name_list, type_list):
             continue
         name = "m_" + name_list[i]
         idenum = "ID_" + name_list[i].upper()
-        line = impl_line_template.format(name, idenum) + "\n\t\t"
+        line = impl_line_template.format(name, idenum) + "\n\t\t\t"
         content = content + line
 
     file_name = real_file_name(path)
+    include_name = file_name.lower()
+    abs_file_path = os.path.abspath(path)
+    abs_file_path = abs_file_path.replace("\\", "/")
+
     node = root.find(body_impl_tag)
     text = node.text.replace(bodyimpl_str, content)
     text = text.replace(filename_str, file_name)
     text = text.replace(reference_str, "&")
+    text = text.replace(include_name_str, include_name)
+    text = text.replace(abs_file_path_str, abs_file_path)
     impl_output_file.writelines(text)
 
 

@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
 SET(SRC_FILES
         src/main.cpp
         src/table/table_file.cpp
+        src/table/table_manager.cpp
         src/table/table_impl.cpp
         src/utils/utils.cpp
         )

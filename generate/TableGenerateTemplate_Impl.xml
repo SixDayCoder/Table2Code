@@ -7,13 +7,14 @@
     </comment>
 
     <bodyimpl>
-        #include "table/table_${FileName}.h"
+        #include "table/table_${IncludeName}.h"
         TABLE_INSTANCE_IMPL(Table_${FileName});
         bool Table_${FileName}::Load(const TableFile${Reference} tableFile, int32_t nLineIndex)
         {
             ${BodyImpl}
             return true;
         }
+        const char* Table_${FileName}::TableFilePath() { return "${AbsFilePath}"; }
     </bodyimpl>
 
 </root>

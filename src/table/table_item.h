@@ -1,7 +1,7 @@
 
         /*Auto Generated.Do Not Modify.*/
     
-        #include "table/table_file.h"
+        #include "table/table_instance.h"
     
         class Table_Item
         {
@@ -17,6 +17,9 @@
                 };
             public:
                 bool Load(const TableFile& tableFile, int32_t nLineIndex);
+
+            public:
+                static const char* TableFilePath();
     
         private:
             int32_t m_Id;

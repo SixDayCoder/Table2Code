@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+
+<root>
+    <comment>
+        /*Auto Generated.Do Not Modify.*/
+        #include "table/table_manager.h"
+    </comment>
+
+    <include>
+        ${IncludeBody}
+    </include>
+
+    <mapimpl>
+        ${MapImplBody}
+    </mapimpl>
+
+    <loadline>
+            TABLE_INSTANCE(${ClassName}).Load();
+            gTableMap.insert(std::make_pair(${ClassName}::TableFilePath(), ${Reference}TABLE_INSTANCE(${ClassName})));
+    </loadline>
+
+    <loadbody>
+        void TableManager::Load()
+        {
+            ${LoadBody}
+        }
+    </loadbody>
+</root>
+

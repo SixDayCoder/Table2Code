@@ -28,9 +28,14 @@ desc_str = "Desc"
 
 header_template_path = r"./TableGenerateTemplate_Header.xml"
 impl_template_path = r"./TableGenerateTemplate_Impl.xml"
+manager_impl_template_path = r"./TableGenerateTemplate_ManagerImpl.xml"
 
 impl_output_file_name = "table_impl.cpp"
 impl_line_template = r"tableFile.Read({0}, nLineIndex, (int32_t){1});"
+
+manager_impl_output_file_name = "table_manager.cpp"
+manager_impl_map_template = r"std::map<std::string, TableInstancePtr> TableManager::gTableMap;"
+manager_impl_inlcude_template = r'#include "table/table_{0}.h"' + "\n\t\t"
 
 # constant for xml replace
 
@@ -40,9 +45,13 @@ class_head_tag = "classhead"
 class_end_tag = "classend"
 property_tag = "property"
 body_impl_tag = "bodyimpl"
+map_impl_tag = "mapimpl"
+load_line_tag = "loadline"
+load_body_tag = "loadbody"
 
 newline_str = "${NewLine}"
 filename_str = "${FileName}"
+classname_str = "${ClassName}"
 idbody_str = "${IdBody}"
 reference_str = "${Reference}"
 type_str = "${Type}"
@@ -50,6 +59,9 @@ valname_str = "${VariableName}"
 bodyimpl_str = "${BodyImpl}"
 abs_file_path_str = "${AbsFilePath}"
 include_name_str = "${IncludeName}"
+include_body_str = "${IncludeBody}"
+map_impl_body_str = "${MapImplBody}"
+load_body_str = "${LoadBody}"
 
 
 # global variable in this script
@@ -60,6 +72,10 @@ input_file_path_lists = []
 output_dir = ""
 impl_output_file_path = ""
 impl_output_file = None
+
+manager_impl_output_file_path = ""
+manager_impl_output_file = None
+manager_impl_include_list = []
 
 
 def init_file():
@@ -72,15 +88,23 @@ def init_file():
             input_file_path_lists.append(path)
 
     # output_file_path
-    global impl_output_file_path
     if not os.path.isdir(output_dir):
         print ("output_dir" + output_dir + "is not a directory")
         sys.exit(2)
+    global impl_output_file_path
     impl_output_file_path = os.path.join(output_dir, impl_output_file_name)
+
+    # manager_impl_output_file_path
+    global manager_impl_output_file_path
+    manager_impl_output_file_path = os.path.join(output_dir, manager_impl_output_file_name)
 
     # impl_output_file
     global impl_output_file
     impl_output_file = open(impl_output_file_path, "wb+")
+
+    # manager_impl_output_file
+    global  manager_impl_output_file
+    manager_impl_output_file = open(manager_impl_output_file_path, "wb+")
 
 
 def parse_name_and_type(f):
@@ -110,6 +134,7 @@ def real_file_name(filepath):
         print (e)
         sys.exit(2)
 
+
 def header_idbody(name_list):
     ret = ""
     index = 0
@@ -135,10 +160,10 @@ def add_new_file_to(newfile_name, newfile_content):
 
 def generate_class_header(root, file_name, name_list):
     node = root.find(comment_tag)
-    comment = node.text.replace(newline_str, "\n")
+    comment = node.text
 
     node = root.find(include_tag)
-    include = node.text.replace(newline_str, "\n")
+    include = node.text
 
     node = root.find(class_head_tag)
     idbody_content = header_idbody(name_list)
@@ -187,6 +212,9 @@ def generate_parse_header(path, name_list, type_list):
     output = output + generate_class_header(root, file_name, name_list)
     output = output + generate_class_body(root, name_list, type_list)
     output = output + generate_class_end(root, file_name)
+    global manager_impl_include_list
+    include = manager_impl_inlcude_template.format(file_name).lower()
+    manager_impl_include_list.append(include)
     add_new_file_to(class_name + ".h", output)
 
 
@@ -216,6 +244,56 @@ def generate_parse_impl(path, name_list, type_list):
     impl_output_file.writelines(text)
 
 
+def generate_parse_manager_impl_header():
+    tree = ET.parse(manager_impl_template_path)
+    root = tree.getroot()
+
+    node = root.find(comment_tag)
+    manager_impl_output_file.writelines(node.text)
+
+    node = root.find(map_impl_tag)
+    text = node.text.replace(map_impl_body_str, manager_impl_map_template)
+    manager_impl_output_file.writelines(text)
+
+
+def generate_parse_manager_impl_body(path):
+    tree = ET.parse(manager_impl_template_path)
+    root = tree.getroot()
+    file_name = real_file_name(path)
+    class_name = "Table_" + file_name
+
+    node = root.find(load_line_tag)
+    text = node.text.replace(classname_str, class_name)
+    text = text.replace(reference_str, "&")
+    return text
+
+
+def generate_parse_manager_impl_write(content):
+
+    tree = ET.parse(manager_impl_template_path)
+    root = tree.getroot()
+
+    node = root.find(comment_tag)
+    manager_impl_output_file.writelines(node.text)
+
+    include = ""
+    for i in range(0, len(manager_impl_include_list)):
+        include = include + manager_impl_include_list[i]
+    node = root.find(include_tag)
+    text = node.text.replace(include_body_str, include)
+    manager_impl_output_file.writelines(text)
+
+    node = root.find(map_impl_tag)
+    text = node.text.replace(map_impl_body_str, manager_impl_map_template)
+    manager_impl_output_file.writelines(text)
+
+    node = root.find(load_body_tag)
+    text = node.text.replace(load_body_str, content)
+    manager_impl_output_file.writelines(text)
+    # close file
+    manager_impl_output_file.close()
+
+
 def generate(arg_input_dir, arg_output_dir):
     # init files
     global input_dir
@@ -225,12 +303,13 @@ def generate(arg_input_dir, arg_output_dir):
     init_file()
 
     # parse
-    impl_output_f = open(impl_output_file_path, "wb")
+    manager_impl_content = ""
     for i in range(0, len(input_file_path_lists)):
         path = input_file_path_lists[i]
         input_f = open(path, "rb")
         name_list, type_list = parse_name_and_type(input_f)
         generate_parse_header(path, name_list, type_list)
         generate_parse_impl(path, name_list, type_list)
+        manager_impl_content = manager_impl_content + generate_parse_manager_impl_body(path)
         input_f.close()
-    impl_output_f.close()
+    generate_parse_manager_impl_write(manager_impl_content)

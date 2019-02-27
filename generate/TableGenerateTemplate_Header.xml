@@ -37,5 +37,20 @@
             ${Type} Get${VariableName}() const { return m_${VariableName}; }
     </property>
 
+    <array>
+        private:
+            ${Type} m_${VariableName}[${Count}];
+        public:
+            int32_t Get${VariableName}Count() const { return ${Count}; }
+        public:
+            ${Type} Get${VariableName}ByIndex(int32_t nIndex) const
+            {
+                if(nIndex ${LeftBrackets} 0 || nIndex ${RightBrackets}= ${Count}) {
+                    m_${VariableName}[nIndex];
+                }
+                return m_${DefaultVal};
+            }
+    </array>
+
 </root>
 

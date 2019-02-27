@@ -1,0 +1,7 @@
+Id	Desc	SkillId	SkillDamgeType0	SkillDamageVal0	SkillDamgeType1	SkillDamageVal1	SkillDamgeType2	SkillDamageVal2
+INT32	STRING	INT32	INT32	INT32	INT32	INT32	INT32	INT32
+#ID Can Not Change!	物品描述	技能Id	技能伤害类型0	技能伤害值0	技能伤害类型1	技能伤害值1	技能伤害类型2	技能伤害值2
+1	普通攻击	1	1	50	2	25	-1	0
+2	重击	2	1	200	2	100	-1	0
+3	轻击1	3	1	100	-1	0	-1	0
+4	轻击2	4	1	100	-1	0	-1	0

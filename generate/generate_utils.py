@@ -6,23 +6,10 @@ import os
 import xml.etree.ElementTree as ET
 
 # constant for name and type parse
-
-int32_t = "int32_t"
-int64_t = "int64_t"
-string_t = "std::string"
-float_t = "float"
-
-
-int32_type = "INT32"
-int64_type = "INT64"
-string_type = "STRING"
-float_type = "FLOAT"
-
-
+type_map = {"INT32": "int32_t", "INT64": "int64_t", "STRING": "std::string", "FLOAT": "float"}
 LINE_INDEX_NAME = 0
 LINE_INDEX_TYPE = 1
 
-desc_str = "Desc"
 
 # constant for generate template
 
@@ -37,8 +24,8 @@ manager_impl_output_file_name = "table_manager.cpp"
 manager_impl_map_template = r"std::map<std::string, TableInstancePtr> TableManager::gTableMap;"
 manager_impl_inlcude_template = r'#include "table/table_{0}.h"' + "\n\t\t"
 
-# constant for xml replace
 
+# xml tag
 comment_tag = "comment"
 include_tag = "include"
 class_head_tag = "classhead"
@@ -48,8 +35,13 @@ body_impl_tag = "bodyimpl"
 map_impl_tag = "mapimpl"
 load_line_tag = "loadline"
 load_body_tag = "loadbody"
+array_tag = "array"
 
+# xml replace string
 newline_str = "${NewLine}"
+left_brackets_str = "${LeftBrackets}"
+right_brackets_str = "${RightBrackets}"
+
 filename_str = "${FileName}"
 classname_str = "${ClassName}"
 idbody_str = "${IdBody}"
@@ -62,6 +54,8 @@ include_name_str = "${IncludeName}"
 include_body_str = "${IncludeBody}"
 map_impl_body_str = "${MapImplBody}"
 load_body_str = "${LoadBody}"
+count_str = "${Count}"
+default_val = "${DefaultVal}"
 
 
 # global variable in this script
@@ -78,6 +72,16 @@ manager_impl_output_file = None
 manager_impl_include_list = []
 
 
+# special for generate array
+class ArrayName:
+
+    def __init__(self, name, type):
+        self.array_variable_type = type
+        self.array_variable_name = name
+        self.array_variable_type_list = []
+
+
+# utils
 def init_file():
     # input_file_paths
     global input_file_path_lists
@@ -158,7 +162,40 @@ def add_new_file_to(newfile_name, newfile_content):
         sys.exit(2)
 
 
-def generate_class_header(root, file_name, name_list):
+def array_name(name_list, type_list):
+    array_name_dic = {}
+    name_set = set()
+    for i in range(0, len(name_list) - 1):
+        for j in range(i + 1, len(name_list)):
+            if name_list[j][:-1] == name_list[i][:-1] and name_list[i][:-1] not in name_set:
+                array_name_dic[name_list[j]] = type_list[i]
+                array_name_dic[name_list[i]] = type_list[i]
+                name_set.add(name_list[i][:-1])
+    if len(array_name_dic) > 0:
+        print (array_name_dic)
+        print (name_set)
+    return array_name_dic, name_set
+
+
+# parse header funtion
+def generate_parse_header_body_single(root, name, type):
+    node = root.find(property_tag)
+    val = type_map.get(type, None)
+    if val is None:
+        print ("get type according to type error : " + "type is : " + type)
+        sys.exit(2)
+    text = node.text.replace(type_str, val)
+    text = text.replace(valname_str, name)
+    return text
+
+
+def generate_parse_header_body_array(root, array_name_dic):
+    node = root.find(array_tag)
+    count = len(array_name_dic)
+    return node.text
+
+
+def generate_parse_header_begin(root, file_name, name_list):
     node = root.find(comment_tag)
     comment = node.text
 
@@ -173,57 +210,55 @@ def generate_class_header(root, file_name, name_list):
     return comment + include + class_head
 
 
-def generate_class_body(root, name_list, type_list):
+def generate_parse_header_body(root, name_list, type_list):
+    # check array name
+    array_name_dic, arrary_name_set = array_name(name_list, type_list)
+    # generate
     ret = ""
     for i in range(0, len(type_list)):
-        typestr = type_list[i]
-        node = root.find(property_tag)
-        property_str = node.text
-        type_content = ""
-        variable_name = name_list[i]
-        if variable_name == desc_str:
+        if name_list[i] == "Desc":
             continue
-        if typestr == int32_type:
-            type_content = int32_t
-        elif typestr == int64_type:
-            type_content = int64_t
-        elif typestr == float_type:
-            type_content = float_t
-        elif typestr == string_type:
-            type_content = string_t
-        property_str = property_str.replace(type_str, type_content)
-        property_str = property_str.replace(valname_str, variable_name)
-        ret = ret + property_str
+        typestr = type_list[i]
+        namestr = name_list[i]
+        # generate array
+        if namestr[:-1] in arrary_name_set:
+            ret = ret + generate_parse_header_body_array(root, array_name_dic)
+        # generate single
+        else:
+            ret = ret + generate_parse_header_body_single(root, namestr, typestr)
     return ret
 
 
-def generate_class_end(root, file_name):
+def generate_parse_header_end(root, file_name):
     node = root.find(class_end_tag)
     return node.text.replace(filename_str, file_name)
 
 
-def generate_parse_header(path, name_list, type_list):
+def generate_header(path, name_list, type_list):
     file_name = real_file_name(path)
     class_name = "table_" + file_name.lower()
-
+    # parse xml
     tree = ET.parse(header_template_path)
     root = tree.getroot()
     output = ""
-    output = output + generate_class_header(root, file_name, name_list)
-    output = output + generate_class_body(root, name_list, type_list)
-    output = output + generate_class_end(root, file_name)
+    output = output + generate_parse_header_begin(root, file_name, name_list)
+    output = output + generate_parse_header_body(root, name_list, type_list)
+    output = output + generate_parse_header_end(root, file_name)
+    # ready data for adding new file
     global manager_impl_include_list
     include = manager_impl_inlcude_template.format(file_name).lower()
     manager_impl_include_list.append(include)
     add_new_file_to(class_name + ".h", output)
 
 
-def generate_parse_impl(path, name_list, type_list):
+# generate impl
+
+def generate_impl(path, name_list, type_list):
     tree = ET.parse(impl_template_path)
     root = tree.getroot()
     content = ""
     for i in range(0, len(name_list)):
-        if name_list[i] == desc_str:
+        if name_list[i] == "Desc":
             continue
         name = "m_" + name_list[i]
         idenum = "ID_" + name_list[i].upper()
@@ -244,19 +279,9 @@ def generate_parse_impl(path, name_list, type_list):
     impl_output_file.writelines(text)
 
 
-def generate_parse_manager_impl_header():
-    tree = ET.parse(manager_impl_template_path)
-    root = tree.getroot()
+# generate manager impl
 
-    node = root.find(comment_tag)
-    manager_impl_output_file.writelines(node.text)
-
-    node = root.find(map_impl_tag)
-    text = node.text.replace(map_impl_body_str, manager_impl_map_template)
-    manager_impl_output_file.writelines(text)
-
-
-def generate_parse_manager_impl_body(path):
+def generate_manager_impl(path):
     tree = ET.parse(manager_impl_template_path)
     root = tree.getroot()
     file_name = real_file_name(path)
@@ -268,8 +293,7 @@ def generate_parse_manager_impl_body(path):
     return text
 
 
-def generate_parse_manager_impl_write(content):
-
+def generate_manager_impl_write(content):
     tree = ET.parse(manager_impl_template_path)
     root = tree.getroot()
 
@@ -308,8 +332,8 @@ def generate(arg_input_dir, arg_output_dir):
         path = input_file_path_lists[i]
         input_f = open(path, "rb")
         name_list, type_list = parse_name_and_type(input_f)
-        generate_parse_header(path, name_list, type_list)
-        generate_parse_impl(path, name_list, type_list)
-        manager_impl_content = manager_impl_content + generate_parse_manager_impl_body(path)
+        generate_header(path, name_list, type_list)
+        generate_impl(path, name_list, type_list)
+        manager_impl_content = manager_impl_content + generate_manager_impl(path)
         input_f.close()
-    generate_parse_manager_impl_write(manager_impl_content)
+    generate_manager_impl_write(manager_impl_content)

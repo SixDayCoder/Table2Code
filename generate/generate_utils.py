@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 # constant for name and type parse
 type_map = {"INT32": "int32_t", "INT64": "int64_t", "STRING": "std::string", "FLOAT": "float"}
+default_val_map = {"INT32": "-1", "INT64": "-1", "STRING": "", "FLOAT": "0.0"}
 LINE_INDEX_NAME = 0
 LINE_INDEX_TYPE = 1
 
@@ -18,7 +19,8 @@ impl_template_path = r"./TableGenerateTemplate_Impl.xml"
 manager_impl_template_path = r"./TableGenerateTemplate_ManagerImpl.xml"
 
 impl_output_file_name = "table_impl.cpp"
-impl_line_template = r"tableFile.Read({0}, nLineIndex, (int32_t){1});"
+impl_line_single_template = r"tableFile.Read(m_{0}, nLineIndex, (int32_t){1});"
+impl_line_array_template = r"tableFile.Read(m_{0}[{1}], nLineIndex, (int32_t){2});"
 
 manager_impl_output_file_name = "table_manager.cpp"
 manager_impl_map_template = r"std::map<std::string, TableInstancePtr> TableManager::gTableMap;"
@@ -55,7 +57,7 @@ include_body_str = "${IncludeBody}"
 map_impl_body_str = "${MapImplBody}"
 load_body_str = "${LoadBody}"
 count_str = "${Count}"
-default_val = "${DefaultVal}"
+default_val_str = "${DefaultVal}"
 
 
 # global variable in this script
@@ -73,12 +75,17 @@ manager_impl_include_list = []
 
 
 # special for generate array
-class ArrayName:
+class ArrayNameObj:
 
-    def __init__(self, name, type):
-        self.array_variable_type = type
-        self.array_variable_name = name
-        self.array_variable_type_list = []
+    def __init__(self, array_name_dic):
+        self.array_variable_name = ""
+        self.array_variable_type = ""
+        self.array_variable_enum_list = []
+        for k in array_name_dic:
+            self.array_variable_name = k[:-1]
+            self.array_variable_type = array_name_dic[k]
+            self.array_variable_enum_list.append("ID_" + k.upper())
+        self.array_variable_enum_list.sort()
 
 
 # utils
@@ -163,18 +170,19 @@ def add_new_file_to(newfile_name, newfile_content):
 
 
 def array_name(name_list, type_list):
-    array_name_dic = {}
-    name_set = set()
+    array_name_set = set()
+    array_name_obj_list = []
     for i in range(0, len(name_list) - 1):
+        array_name_dic = {}
         for j in range(i + 1, len(name_list)):
-            if name_list[j][:-1] == name_list[i][:-1] and name_list[i][:-1] not in name_set:
-                array_name_dic[name_list[j]] = type_list[i]
+            if name_list[j][:-1] == name_list[i][:-1] and name_list[i][:-1] not in array_name_set:
                 array_name_dic[name_list[i]] = type_list[i]
-                name_set.add(name_list[i][:-1])
-    if len(array_name_dic) > 0:
-        print (array_name_dic)
-        print (name_set)
-    return array_name_dic, name_set
+                array_name_dic[name_list[j]] = type_list[j]
+        if len(array_name_dic) > 0:
+            array_name_object = ArrayNameObj(array_name_dic)
+            array_name_set.add(name_list[i][:-1])
+            array_name_obj_list.append(array_name_object)
+    return array_name_obj_list, array_name_set
 
 
 # parse header funtion
@@ -189,10 +197,19 @@ def generate_parse_header_body_single(root, name, type):
     return text
 
 
-def generate_parse_header_body_array(root, array_name_dic):
+def generate_parse_header_body_array(root, array_name_obj, array_name_set):
+    valname = array_name_obj.array_variable_name
+    valtype = array_name_obj.array_variable_type
+    count = str(len(array_name_obj.array_variable_enum_list))
+
     node = root.find(array_tag)
-    count = len(array_name_dic)
-    return node.text
+    text = node.text.replace(type_str, type_map[valtype])
+    text = text.replace(valname_str, valname)
+    text = text.replace(count_str, count)
+    text = text.replace(left_brackets_str, "<")
+    text = text.replace(right_brackets_str, ">")
+    text = text.replace(default_val_str, default_val_map[valtype])
+    return text
 
 
 def generate_parse_header_begin(root, file_name, name_list):
@@ -212,17 +229,20 @@ def generate_parse_header_begin(root, file_name, name_list):
 
 def generate_parse_header_body(root, name_list, type_list):
     # check array name
-    array_name_dic, arrary_name_set = array_name(name_list, type_list)
+    array_name_obj_list, array_name_set = array_name(name_list, type_list)
     # generate
     ret = ""
+    curr_idx = 0
     for i in range(0, len(type_list)):
         if name_list[i] == "Desc":
             continue
         typestr = type_list[i]
         namestr = name_list[i]
         # generate array
-        if namestr[:-1] in arrary_name_set:
-            ret = ret + generate_parse_header_body_array(root, array_name_dic)
+        if namestr[:-1] in array_name_set:
+            if curr_idx >= 0 and curr_idx < len(array_name_obj_list):
+                ret = ret + generate_parse_header_body_array(root, array_name_obj_list[curr_idx], array_name_set)
+                curr_idx = curr_idx + 1
         # generate single
         else:
             ret = ret + generate_parse_header_body_single(root, namestr, typestr)
@@ -254,22 +274,37 @@ def generate_header(path, name_list, type_list):
 # generate impl
 
 def generate_impl(path, name_list, type_list):
-    tree = ET.parse(impl_template_path)
-    root = tree.getroot()
+    # check array name
+    array_name_obj_list, array_name_set = array_name(name_list, type_list)
     content = ""
+    cur_idx = 0
     for i in range(0, len(name_list)):
         if name_list[i] == "Desc":
             continue
-        name = "m_" + name_list[i]
-        idenum = "ID_" + name_list[i].upper()
-        line = impl_line_template.format(name, idenum) + "\n\t\t\t"
-        content = content + line
+        # impl line array
+        if name_list[i][:-1] in array_name_set:
+            if cur_idx >= 0 and cur_idx < len(array_name_obj_list):
+                array_name_obj = array_name_obj_list[cur_idx]
+                if array_name_obj is not None:
+                    name = array_name_obj.array_variable_name
+                    for j in range(0, len(array_name_obj.array_variable_enum_list)):
+                        line = impl_line_array_template.format(name, j, array_name_obj.array_variable_enum_list[j]) + "\n\t\t\t"
+                        content = content + line
+                cur_idx = cur_idx + 1
+        # impl line single
+        else:
+            name = name_list[i]
+            idenum = "ID_" + name_list[i].upper()
+            line = impl_line_single_template.format(name, idenum) + "\n\t\t\t"
+            content = content + line
 
+    # replace content
     file_name = real_file_name(path)
     include_name = file_name.lower()
-    abs_file_path = os.path.abspath(path)
-    abs_file_path = abs_file_path.replace("\\", "/")
+    abs_file_path = os.path.abspath(path).replace("\\", "/")
 
+    tree = ET.parse(impl_template_path)
+    root = tree.getroot()
     node = root.find(body_impl_tag)
     text = node.text.replace(bodyimpl_str, content)
     text = text.replace(filename_str, file_name)

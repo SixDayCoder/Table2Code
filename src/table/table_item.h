@@ -23,21 +23,25 @@
     
         private:
             int32_t m_Id;
+
         public:
             int32_t GetId() const { return m_Id; }
     
         private:
             int32_t m_DataId;
+
         public:
             int32_t GetDataId() const { return m_DataId; }
     
         private:
             int32_t m_Price;
+
         public:
             int32_t GetPrice() const { return m_Price; }
     
         private:
             int32_t m_StackCount;
+
         public:
             int32_t GetStackCount() const { return m_StackCount; }
     

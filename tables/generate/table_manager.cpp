@@ -3,6 +3,7 @@
         #include "table/table_manager.h"
     
         #include "table/table_array.h"
+		#include "table/table_complex.h"
 		#include "table/table_item.h"
 		#include "table/table_test.h"
 		
@@ -14,6 +15,9 @@
             
             TABLE_INSTANCE(Table_Array).Load();
             gTableMap.insert(std::make_pair(Table_Array::TableFilePath(), &TABLE_INSTANCE(Table_Array)));
+    
+            TABLE_INSTANCE(Table_Complex).Load();
+            gTableMap.insert(std::make_pair(Table_Complex::TableFilePath(), &TABLE_INSTANCE(Table_Complex)));
     
             TABLE_INSTANCE(Table_Item).Load();
             gTableMap.insert(std::make_pair(Table_Item::TableFilePath(), &TABLE_INSTANCE(Table_Item)));

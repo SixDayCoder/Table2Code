@@ -9,6 +9,7 @@
 #include "table/table_file.h"
 
 #include <vector>
+#include <iostream>
 class ITableInstance
 {
 public:
@@ -41,7 +42,6 @@ public:
     virtual void Load()
     {
         TableFile file(TableRecordType::TableFilePath());
-        file.Load();
         Load(file);
     }
 
@@ -76,8 +76,8 @@ private:
 
     void Load(TableFile& tableFile)
     {
+        m_Records.clear();
         tableFile.Load();
-        m_Records.reserve(tableFile.RecordCount());
         TableRecordType record;
         for(int32_t nRecordIdx = 0; nRecordIdx < tableFile.RecordCount(); ++nRecordIdx) {
             record.Load(tableFile, nRecordIdx);

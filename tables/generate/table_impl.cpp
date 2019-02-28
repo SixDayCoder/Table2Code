@@ -5,16 +5,38 @@
         {
             tableFile.Read(m_Id, nLineIndex, (int32_t)ID_ID);
 			tableFile.Read(m_SkillId, nLineIndex, (int32_t)ID_SKILLID);
-			tableFile.Read(m_SkillDamgeType0, nLineIndex, (int32_t)ID_SKILLDAMGETYPE0);
-			tableFile.Read(m_SkillDamageVal0, nLineIndex, (int32_t)ID_SKILLDAMAGEVAL0);
-			tableFile.Read(m_SkillDamgeType1, nLineIndex, (int32_t)ID_SKILLDAMGETYPE1);
-			tableFile.Read(m_SkillDamageVal1, nLineIndex, (int32_t)ID_SKILLDAMAGEVAL1);
-			tableFile.Read(m_SkillDamgeType2, nLineIndex, (int32_t)ID_SKILLDAMGETYPE2);
-			tableFile.Read(m_SkillDamageVal2, nLineIndex, (int32_t)ID_SKILLDAMAGEVAL2);
+			tableFile.Read(m_SkillDamgeType[0], nLineIndex, (int32_t)ID_SKILLDAMGETYPE0);
+			tableFile.Read(m_SkillDamgeType[1], nLineIndex, (int32_t)ID_SKILLDAMGETYPE1);
+			tableFile.Read(m_SkillDamgeType[2], nLineIndex, (int32_t)ID_SKILLDAMGETYPE2);
+			tableFile.Read(m_SkillDamageVal[0], nLineIndex, (int32_t)ID_SKILLDAMAGEVAL0);
+			tableFile.Read(m_SkillDamageVal[1], nLineIndex, (int32_t)ID_SKILLDAMAGEVAL1);
+			tableFile.Read(m_SkillDamageVal[2], nLineIndex, (int32_t)ID_SKILLDAMAGEVAL2);
 			
             return true;
         }
         const char* Table_Array::TableFilePath() { return "D:/Table2Code/tables/Array.txt"; }
+    
+        #include "table/table_complex.h"
+        TABLE_INSTANCE_IMPL(Table_Complex);
+        bool Table_Complex::Load(const TableFile& tableFile, int32_t nLineIndex)
+        {
+            tableFile.Read(m_Id, nLineIndex, (int32_t)ID_ID);
+			tableFile.Read(m_SkillId, nLineIndex, (int32_t)ID_SKILLID);
+			tableFile.Read(m_SkillDamgeType[0], nLineIndex, (int32_t)ID_SKILLDAMGETYPE0);
+			tableFile.Read(m_SkillDamgeType[1], nLineIndex, (int32_t)ID_SKILLDAMGETYPE1);
+			tableFile.Read(m_SkillDamgeType[2], nLineIndex, (int32_t)ID_SKILLDAMGETYPE2);
+			tableFile.Read(m_SkillDamageVal[0], nLineIndex, (int32_t)ID_SKILLDAMAGEVAL0);
+			tableFile.Read(m_SkillDamageVal[1], nLineIndex, (int32_t)ID_SKILLDAMAGEVAL1);
+			tableFile.Read(m_SkillDamageVal[2], nLineIndex, (int32_t)ID_SKILLDAMAGEVAL2);
+			tableFile.Read(m_SkillExId[0], nLineIndex, (int32_t)ID_SKILLEXID0);
+			tableFile.Read(m_SkillExId[1], nLineIndex, (int32_t)ID_SKILLEXID1);
+			tableFile.Read(m_Rate, nLineIndex, (int32_t)ID_RATE);
+			tableFile.Read(m_Time, nLineIndex, (int32_t)ID_TIME);
+			tableFile.Read(m_Price, nLineIndex, (int32_t)ID_PRICE);
+			
+            return true;
+        }
+        const char* Table_Complex::TableFilePath() { return "D:/Table2Code/tables/Complex.txt"; }
     
         #include "table/table_item.h"
         TABLE_INSTANCE_IMPL(Table_Item);

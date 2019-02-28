@@ -3,7 +3,7 @@
     
         #include "table/table_instance.h"
     
-        class Table_Array
+        class Table_Complex
         {
             public:
                 enum
@@ -17,6 +17,11 @@
 					ID_SKILLDAMAGEVAL1 = 6,
 					ID_SKILLDAMGETYPE2 = 7,
 					ID_SKILLDAMAGEVAL2 = 8,
+					ID_RATE = 9,
+					ID_TIME = 10,
+					ID_SKILLEXID0 = 11,
+					ID_SKILLEXID1 = 12,
+					ID_PRICE = 13,
 					
                 };
             public:
@@ -65,6 +70,38 @@
                 return m_SkillDamageVal[nIndex];
             }
     
+        private:
+            int32_t m_SkillExId[2];
+
+        public:
+            int32_t GetSkillExIdCount() const { return 2; }
+
+            int32_t GetSkillExIdByIndex(int32_t nIndex) const
+            {
+                if(nIndex < 0 || nIndex >= 2) {
+                    return -1;
+                }
+                return m_SkillExId[nIndex];
+            }
+    
+        private:
+            float m_Rate;
+
+        public:
+            float GetRate() const { return m_Rate; }
+    
+        private:
+            int64_t m_Time;
+
+        public:
+            int64_t GetTime() const { return m_Time; }
+    
+        private:
+            int32_t m_Price;
+
+        public:
+            int32_t GetPrice() const { return m_Price; }
+    
         };
-        TABLE_INSTANCE_DECLARE(Table_Array);
+        TABLE_INSTANCE_DECLARE(Table_Complex);
     

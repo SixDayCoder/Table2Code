@@ -24,26 +24,31 @@
     
         private:
             int32_t m_Id;
+
         public:
             int32_t GetId() const { return m_Id; }
     
         private:
             int32_t m_Int32Val;
+
         public:
             int32_t GetInt32Val() const { return m_Int32Val; }
     
         private:
             int64_t m_Int64Val;
+
         public:
             int64_t GetInt64Val() const { return m_Int64Val; }
     
         private:
             float m_FloatVal;
+
         public:
             float GetFloatVal() const { return m_FloatVal; }
     
         private:
             std::string m_StringVal;
+
         public:
             std::string GetStringVal() const { return m_StringVal; }
     

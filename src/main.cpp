@@ -16,7 +16,7 @@ void LoadTables()
     TableManager::Load();
     int32_t nCnt = 0;
     cout << "Table_Test Begin" << endl;
-    nCnt = TABLE_GET_BY_COUNT(Table_Test);
+    nCnt = TABLE_GET_COUNT(Table_Test);
     cout << "nCnt " << nCnt << endl;
     for(int32_t i = 0; i < nCnt; ++i) {
         const Table_Test* record = TABLE_GET_BY_INDEX(Table_Test)(i);
@@ -27,7 +27,7 @@ void LoadTables()
     cout << "Table_Test End" << endl;
 
     cout << "Table_Item Begin" << endl;
-    nCnt = TABLE_GET_BY_COUNT(Table_Item);
+    nCnt = TABLE_GET_COUNT(Table_Item);
     cout << "nCnt " << nCnt << endl;
     for(int32_t i = 0; i < nCnt; ++i) {
         const Table_Item* record = TABLE_GET_BY_INDEX(Table_Item)(i);
@@ -38,7 +38,7 @@ void LoadTables()
     cout << "Table_Item End" << endl;
 
     cout << "Table_Array Begin" << endl;
-    nCnt = TABLE_GET_BY_COUNT(Table_Array);
+    nCnt = TABLE_GET_COUNT(Table_Array);
     cout << "nCnt " << nCnt << endl;
     for(int32_t i = 0; i < nCnt; ++i) {
         const Table_Array* record = TABLE_GET_BY_INDEX(Table_Array)(i);
@@ -62,7 +62,7 @@ void LoadTables()
     cout << "Table_Array End" << endl;
 
     cout << "Table_Complex Begin" << endl;
-    nCnt = TABLE_GET_BY_COUNT(Table_Complex);
+    nCnt = TABLE_GET_COUNT(Table_Complex);
     cout << "nCnt " << nCnt << endl;
     for(int32_t i = 0; i < nCnt; ++i) {
         const Table_Complex* record = TABLE_GET_BY_INDEX(Table_Complex)(i);

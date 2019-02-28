@@ -100,7 +100,7 @@ private:
 
 #define TABLE_GET_BY_INDEX(Name) TABLE_INSTANCE(Name).GetRecordByIndex
 
-#define TABLE_GET_BY_COUNT(Name) TABLE_INSTANCE(Name).GetRecordCount()
+#define TABLE_GET_COUNT(Name) TABLE_INSTANCE(Name).GetRecordCount()
 
 
 #endif //TABLE2CODE_TABLE_MANAGER_H
